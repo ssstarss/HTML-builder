@@ -4,6 +4,10 @@ const path = require('path');
 const destPath = path.join(__dirname, 'project-dist/bundle.css');
 const srcPath = path.join(__dirname, 'styles');
 
+mergeStyles(srcPath, destPath);
+
+function mergeStyles(srcPath, destPath) {
+
 fsPromises.writeFile(destPath, '', (err) => {
   if (err) throw err;
 });
@@ -23,3 +27,7 @@ fsPromises.readdir(srcPath, { withFileTypes: true }).then((filesList) => {
     }
   });
 });
+
+}
+
+module.exports = mergeStyles;
