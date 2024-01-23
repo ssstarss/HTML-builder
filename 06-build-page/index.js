@@ -1,7 +1,5 @@
 const fsPromises = require('fs/promises');
 const path = require('path');
-const mergeStyles = require('../05-merge-styles/index.js');
-const copyDir = require('../04-copy-directory/index.js');
 
 const  destFolder = path.join(__dirname, 'project-dist');
 
@@ -40,12 +38,58 @@ async function buildHtml(){
   templateText = templateText.toString()
   let some = templateText.split('\r\n');
   for (let component of components) {
-    srcPath = path.join(__dirname + '\\components', component + '.html');
+    srcPath = path.join(__dirname , 'components' , component + '.html');
     string = await fsPromises.readFile(srcPath)
     templateText = templateText.toString().replace(`{{${component}}}`, string);
   }
   fsPromises.writeFile(htmlFile, templateText); 
 }
 
+function copyDir(oldDir, newDir) {
+  fsPromises.mkdir(newDir, { recursive: true }, (err) => {
+    if (err) throw err;
+  });
+  fsPromises.readdir(oldDir, { withFileTypes: true }).then((fileList) => {
+    fileList.forEach((file) => {
+      if (file.isDirectory())
+        copyDir(path.join(oldDir, file.name), path.join(newDir, file.name));
+      else {
+        oldFile = path.join(oldDir, file.name);
+        newFile = path.join(newDir, file.name);
+        fsPromises.copyFile(
+          oldFile,
+          newFile,
+          fsPromises.constants.COPYFILE_FICLONE,
+          (err) => {
+            if (err) throw err;
+          },
+        );
+      }
+    });
+  });
+}
 
+function mergeStyles(srcPath, destPath) {
+
+  fsPromises.writeFile(destPath, '', (err) => {
+    if (err) throw err;
+  });
+  
+  fsPromises.readdir(srcPath, { withFileTypes: true }).then((filesList) => {
+    filesList.forEach((file) => {
+      if (file.isFile()) {
+        const filePath = path.join(srcPath, file.name);
+        const fileext = path.parse(filePath).ext.slice(1);
+        if (fileext == 'css') {
+          fsPromises.readFile(filePath).then((string) => {
+            fsPromises.appendFile(destPath, string, (err) => {
+              if (err) throw err;
+            });
+          });
+        }
+      }
+    });
+  });
+  
+  }
 

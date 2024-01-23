@@ -30,4 +30,4 @@ fsPromises.readdir(srcPath, { withFileTypes: true }).then((filesList) => {
 
 }
 
-module.exports = mergeStyles;
+

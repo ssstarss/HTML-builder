@@ -8,10 +8,7 @@ const filePath = path.join(__dirname,"text.txt");
 fs.writeFile( filePath, '',
   (err) =>{ if (err) throw err; });
 
-rl.question('Введите данные: ', (input) => {
-  fs.appendFile( filePath, input + "\r\n", 
-    (err) => { if (err) throw err; });
-});
+console.log('Введите данные:');
 
 rl.on("line", (input) => {
   if (input == "exit") {
